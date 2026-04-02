@@ -8,29 +8,19 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
     :root {
-      --bg: #f5f4f0;
-      --surface: #ffffff;
-      --surface2: #f0efe9;
-      --border: #e2e1d9;
-      --border2: #cccbc2;
-      --text: #1a1917;
-      --text2: #6b6960;
-      --text3: #9e9d96;
-      --accent-bg: #1a1917;
-      --accent-text: #f5f4f0;
-      --red: #9b2226;
-      --red-bg: #fde8e8;
-      --green: #2d6a4f;
-      --green-bg: #d8f3dc;
-      --radius: 6px;
-      --radius-lg: 10px;
+      --bg: #f5f4f0; --surface: #ffffff; --surface2: #f0efe9;
+      --border: #e2e1d9; --border2: #cccbc2;
+      --text: #1a1917; --text2: #6b6960; --text3: #9e9d96;
+      --accent-bg: #1a1917; --accent-text: #f5f4f0;
+      --red: #9b2226; --red-bg: #fde8e8;
+      --radius: 6px; --radius-lg: 10px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'IBM Plex Sans KR', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; line-height: 1.6; }
     header { background: var(--accent-bg); color: var(--accent-text); padding: 1.25rem 2rem; display: flex; align-items: baseline; gap: 1rem; }
     header h1 { font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 500; letter-spacing: 0.02em; }
     header span { font-size: 12px; opacity: 0.45; font-family: 'IBM Plex Mono', monospace; }
-    main { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+    main { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
     .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 1rem; }
     .card-title { font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.08em; color: var(--text3); text-transform: uppercase; margin-bottom: 1rem; }
     .field-label { font-size: 12px; color: var(--text2); margin-bottom: 5px; display: block; }
@@ -42,7 +32,7 @@
     .hint { font-size: 11px; color: var(--text3); margin-top: 6px; font-family: 'IBM Plex Mono', monospace; }
     .hint a { color: var(--text2); }
     .drop-zone { border: 1.5px dashed var(--border2); border-radius: var(--radius-lg); padding: 2.5rem 1rem; text-align: center; cursor: pointer; background: var(--surface2); transition: all 0.15s; position: relative; }
-    .drop-zone.drag { border-color: var(--accent-bg); background: #ebebeb; }
+    .drop-zone.drag { border-color: var(--accent-bg); }
     .drop-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
     .drop-zone strong { display: block; font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
     .drop-zone p { font-size: 12px; color: var(--text3); font-family: 'IBM Plex Mono', monospace; }
@@ -53,39 +43,36 @@
     .run-btn { width: 100%; padding: 12px; background: var(--accent-bg); color: var(--accent-text); border: none; border-radius: var(--radius); font-family: 'IBM Plex Sans KR', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: opacity 0.15s; }
     .run-btn:hover:not(:disabled) { opacity: 0.85; }
     .run-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-    .progress-bar-track { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; margin-bottom: 6px; display: none; }
+    .progress-bar-track { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; margin-top: 10px; margin-bottom: 6px; display: none; }
     .progress-bar-fill { height: 100%; background: var(--accent-bg); border-radius: 2px; transition: width 0.3s ease; width: 0%; }
-    .progress-text { font-size: 12px; color: var(--text2); font-family: 'IBM Plex Mono', monospace; min-height: 18px; margin-top: 8px; }
+    .progress-text { font-size: 12px; color: var(--text2); font-family: 'IBM Plex Mono', monospace; min-height: 18px; }
     .error-box { margin-top: 8px; padding: 10px 14px; background: var(--red-bg); color: var(--red); border-radius: var(--radius); font-size: 12px; font-family: 'IBM Plex Mono', monospace; display: none; }
-    .result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
-    .result-title { font-size: 13px; font-weight: 500; color: var(--text); }
-    .result-desc { font-size: 11px; color: var(--text3); font-family: 'IBM Plex Mono', monospace; margin-top: 2px; }
-    .btn-row { display: flex; gap: 8px; }
-    .dl-btn { padding: 7px 16px; border: 1px solid var(--border2); border-radius: var(--radius); background: var(--surface); color: var(--text); font-family: 'IBM Plex Sans KR', sans-serif; font-size: 12px; cursor: pointer; transition: background 0.1s; }
-    .dl-btn:hover { background: var(--surface2); }
-    .dl-btn.primary { background: var(--accent-bg); color: var(--accent-text); border-color: var(--accent-bg); }
-    .dl-btn.primary:hover { opacity: 0.85; }
-    .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); }
-    table.edit-table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 800px; }
-    table.edit-table th { background: var(--surface2); padding: 8px 10px; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); font-size: 11px; font-family: 'IBM Plex Mono', monospace; font-weight: 500; color: var(--text2); text-align: left; white-space: nowrap; position: sticky; top: 0; z-index: 1; }
-    table.edit-table th:last-child { border-right: none; }
-    table.edit-table td { padding: 0; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); }
-    table.edit-table td:last-child { border-right: none; }
-    table.edit-table tr:last-child td { border-bottom: none; }
-    table.edit-table td input { width: 100%; padding: 7px 10px; border: none; background: transparent; font-family: 'IBM Plex Sans KR', sans-serif; font-size: 12px; color: var(--text); outline: none; min-width: 80px; }
-    table.edit-table td input:focus { background: #fffbe6; }
-    table.edit-table tr:hover td { background: var(--surface2); }
-    table.edit-table tr:hover td input { background: transparent; }
-    table.edit-table td input:focus { background: #fffbe6 !important; }
-    .row-num { width: 32px; text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text3); padding: 7px 4px; border-right: 1px solid var(--border); background: var(--surface2); }
     .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 1rem; }
     .stat-box { background: var(--surface2); border-radius: var(--radius); padding: 14px; }
     .stat-label { font-size: 11px; color: var(--text3); font-family: 'IBM Plex Mono', monospace; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
     .stat-val { font-family: 'IBM Plex Mono', monospace; font-size: 22px; font-weight: 500; color: var(--text); }
-    #resultSection { display: none; }
+    .result-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+    .result-title { font-size: 13px; font-weight: 500; color: var(--text); }
+    .result-desc { font-size: 11px; color: var(--text3); font-family: 'IBM Plex Mono', monospace; margin-top: 2px; }
+    .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .dl-btn { padding: 7px 16px; border: 1px solid var(--border2); border-radius: var(--radius); background: var(--surface); color: var(--text); font-family: 'IBM Plex Sans KR', sans-serif; font-size: 12px; cursor: pointer; transition: background 0.1s; white-space: nowrap; }
+    .dl-btn:hover { background: var(--surface2); }
+    .dl-btn.primary { background: var(--accent-bg); color: var(--accent-text); border-color: var(--accent-bg); }
+    .dl-btn.primary:hover { opacity: 0.85; }
+    .table-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); }
+    table.edit-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    table.edit-table th { background: var(--surface2); padding: 8px 10px; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); font-size: 11px; font-family: 'IBM Plex Mono', monospace; font-weight: 500; color: var(--text2); text-align: left; white-space: nowrap; }
+    table.edit-table th:last-child { border-right: none; }
+    table.edit-table td { padding: 0; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); }
+    table.edit-table td:last-child { border-right: none; }
+    table.edit-table tr:last-child td { border-bottom: none; }
+    table.edit-table td.row-num { width: 32px; text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text3); padding: 7px 4px; background: var(--surface2); vertical-align: middle; }
+    table.edit-table td input { width: 100%; padding: 7px 10px; border: none; background: transparent; font-family: 'IBM Plex Sans KR', sans-serif; font-size: 12px; color: var(--text); outline: none; min-width: 70px; }
+    table.edit-table td input:focus { background: #fffbe6; }
+    table.edit-table tr:hover td:not(.row-num) { background: #fafaf8; }
     .add-row-btn { width: 100%; padding: 8px; border: none; background: var(--surface2); color: var(--text3); font-size: 12px; cursor: pointer; border-top: 1px solid var(--border); font-family: 'IBM Plex Sans KR', sans-serif; border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
     .add-row-btn:hover { background: var(--border); color: var(--text); }
-    @media (max-width: 600px) { main { padding: 1rem 1rem 3rem; } header { padding: 1rem; } .stats-grid { grid-template-columns: 1fr 1fr; } }
+    #resultSection { display: none; }
   </style>
 </head>
 <body>
@@ -128,20 +115,20 @@
 
   <div id="resultSection">
     <div class="stats-grid" id="statsGrid"></div>
-    <div class="card" style="padding: 1.25rem 1.5rem 0;">
+    <div class="card" style="padding: 1.25rem 1.5rem 1rem;">
       <div class="result-header">
         <div>
           <div class="result-title">OCR 결과 — 검수 후 다운로드</div>
-          <div class="result-desc">셀을 클릭하면 직접 수정할 수 있습니다</div>
+          <div class="result-desc">셀 클릭 시 직접 수정 · 열 제목도 수정 가능 · 행 삭제(✕)</div>
         </div>
         <div class="btn-row">
-          <button class="dl-btn" id="addRowBtn">행 추가</button>
+          <button class="dl-btn" id="addRowBtn">+ 행 추가</button>
           <button class="dl-btn primary" id="dlBtn">엑셀 다운로드 ↓</button>
         </div>
       </div>
     </div>
-    <div class="table-wrap" id="tableWrap">
-      <table class="edit-table" id="editTable">
+    <div class="table-scroll">
+      <table class="edit-table">
         <thead id="tableHead"></thead>
         <tbody id="tableBody"></tbody>
       </table>
@@ -228,26 +215,90 @@ async function ocrImage(base64, apiKey) {
   return data.responses[0];
 }
 
-function parseTableFromOCR(response) {
-  const text = response.fullTextAnnotation?.text || '';
-  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-  if (lines.length === 0) return { headers: [], rows: [] };
+// 좌표 기반 표 구조 복원
+function parseTableByCoordinates(response) {
+  const pages = response.fullTextAnnotation?.pages;
+  if (!pages || pages.length === 0) return { headers: [], rows: [] };
 
-  const allRows = lines.map(line => {
-    return line.split(/\t/).map(c => c.trim());
-  });
+  // 모든 word 추출
+  const words = [];
+  for (const page of pages) {
+    for (const block of (page.blocks || [])) {
+      for (const para of (block.paragraphs || [])) {
+        for (const word of (para.words || [])) {
+          const text = word.symbols.map(s => s.text).join('');
+          const verts = word.boundingBox.vertices;
+          const ys = verts.map(v => v.y || 0);
+          const xs = verts.map(v => v.x || 0);
+          const yCenter = (Math.min(...ys) + Math.max(...ys)) / 2;
+          const xMin = Math.min(...xs);
+          const height = Math.max(...ys) - Math.min(...ys);
+          words.push({ text, yCenter, xMin, height });
+        }
+      }
+    }
+  }
 
-  const maxCols = Math.max(...allRows.map(r => r.length));
+  if (words.length === 0) return { headers: [], rows: [] };
 
-  const normalized = allRows.map(row => {
-    while (row.length < maxCols) row.push('');
+  // 평균 글자 높이 계산 (행 허용 오차 동적 산출)
+  const avgHeight = words.reduce((s, w) => s + w.height, 0) / words.length;
+  const rowTolerance = Math.max(avgHeight * 0.6, 8);
+
+  // Y축 기준 행 클러스터링
+  words.sort((a, b) => a.yCenter - b.yCenter);
+  const rowGroups = [];
+  let currentGroup = [words[0]];
+
+  for (let i = 1; i < words.length; i++) {
+    const groupAvgY = currentGroup.reduce((s, w) => s + w.yCenter, 0) / currentGroup.length;
+    if (Math.abs(words[i].yCenter - groupAvgY) <= rowTolerance) {
+      currentGroup.push(words[i]);
+    } else {
+      rowGroups.push(currentGroup);
+      currentGroup = [words[i]];
+    }
+  }
+  if (currentGroup.length > 0) rowGroups.push(currentGroup);
+
+  // 전체 X 위치 수집 → 열 경계 산출
+  const allXMins = words.map(w => w.xMin).sort((a, b) => a - b);
+  const colTolerance = Math.max(avgHeight * 1.5, 15);
+  const colBoundaries = [allXMins[0]];
+  for (let i = 1; i < allXMins.length; i++) {
+    if (allXMins[i] - colBoundaries[colBoundaries.length - 1] > colTolerance) {
+      colBoundaries.push(allXMins[i]);
+    }
+  }
+
+  function assignCol(xMin) {
+    let bestCol = 0, bestDist = Infinity;
+    for (let i = 0; i < colBoundaries.length; i++) {
+      const dist = Math.abs(xMin - colBoundaries[i]);
+      if (dist < bestDist) { bestDist = dist; bestCol = i; }
+    }
+    return bestCol;
+  }
+
+  const numCols = colBoundaries.length;
+  const rows = rowGroups.map(group => {
+    const row = new Array(numCols).fill('');
+    group.sort((a, b) => a.xMin - b.xMin);
+    group.forEach(word => {
+      const col = assignCol(word.xMin);
+      row[col] = row[col] ? row[col] + ' ' + word.text : word.text;
+    });
     return row;
   });
 
-  if (normalized.length === 0) return { headers: [], rows: [] };
+  // 빈 열 제거
+  const usedCols = new Set();
+  rows.forEach(row => row.forEach((cell, ci) => { if (cell.trim()) usedCols.add(ci); }));
+  const usedColArr = [...usedCols].sort((a, b) => a - b);
+  const filteredRows = rows.map(row => usedColArr.map(ci => row[ci] || ''));
+  const headers = usedColArr.map((_, i) => `열${i + 1}`);
 
-  const headers = normalized[0].map((_, i) => `열${i + 1}`);
-  return { headers, rows: normalized };
+  return { headers, rows: filteredRows };
 }
 
 function showError(msg) { errorBox.textContent = msg; errorBox.style.display = 'block'; }
@@ -264,21 +315,25 @@ runBtn.addEventListener('click', async () => {
   tableData = { headers: [], rows: [] };
   progressTrack.style.display = 'block';
   progressFill.style.width = '0%';
+  progressText.textContent = '';
 
   for (let i = 0; i < files.length; i++) {
     const f = files[i];
     progressText.textContent = `처리 중 (${i + 1}/${files.length}) — ${f.name}`;
-    progressFill.style.width = Math.round(((i) / files.length) * 100) + '%';
+    progressFill.style.width = Math.round((i / files.length) * 100) + '%';
 
     try {
       const b64 = await toBase64(f);
       const response = await ocrImage(b64, apiKey);
-      const parsed = parseTableFromOCR(response);
+      const parsed = parseTableByCoordinates(response);
 
       if (tableData.headers.length === 0 && parsed.headers.length > 0) {
         tableData.headers = parsed.headers;
       }
-      parsed.rows.forEach(row => tableData.rows.push(row));
+      parsed.rows.forEach(row => {
+        while (row.length < tableData.headers.length) row.push('');
+        tableData.rows.push(row);
+      });
     } catch (e) {
       showError(`오류 (${f.name}): ${e.message}`);
       runBtn.disabled = false;
@@ -296,53 +351,61 @@ runBtn.addEventListener('click', async () => {
 
 function renderTable() {
   const { headers, rows } = tableData;
-
-  statsGrid.innerHTML = `
-    <div class="stat-box"><div class="stat-label">처리 이미지</div><div class="stat-val">${files.length}</div></div>
-    <div class="stat-box"><div class="stat-label">추출 행 수</div><div class="stat-val">${rows.length}</div></div>
-    <div class="stat-box"><div class="stat-label">열 수</div><div class="stat-val">${headers.length}</div></div>
-  `;
-
+  updateStats();
   tableHead.innerHTML = `<tr>
     <th style="width:32px;">#</th>
-    ${headers.map(h => `<th>${h}</th>`).join('')}
+    ${headers.map((h, i) => `<th contenteditable="true" data-hi="${i}" style="min-width:80px;">${h}</th>`).join('')}
+    <th style="width:32px;"></th>
   </tr>`;
-
+  tableHead.querySelectorAll('th[contenteditable]').forEach(th => {
+    th.addEventListener('blur', e => {
+      tableData.headers[parseInt(e.target.dataset.hi)] = e.target.textContent.trim();
+    });
+  });
   renderRows();
   resultSection.style.display = 'block';
   resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
+function updateStats() {
+  statsGrid.innerHTML = `
+    <div class="stat-box"><div class="stat-label">처리 이미지</div><div class="stat-val">${files.length}</div></div>
+    <div class="stat-box"><div class="stat-label">추출 행 수</div><div class="stat-val" id="rowCount">${tableData.rows.length}</div></div>
+    <div class="stat-box"><div class="stat-label">열 수</div><div class="stat-val">${tableData.headers.length}</div></div>
+  `;
+}
+
 function renderRows() {
-  const { headers, rows } = tableData;
   tableBody.innerHTML = '';
-  rows.forEach((row, ri) => {
+  tableData.rows.forEach((row, ri) => {
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td class="row-num">${ri + 1}</td>` +
-      headers.map((_, ci) => {
-        const val = (row[ci] || '').replace(/"/g, '&quot;');
-        return `<td><input type="text" value="${val}" data-row="${ri}" data-col="${ci}" /></td>`;
-      }).join('');
+    const cells = tableData.headers.map((_, ci) => {
+      const val = (row[ci] || '').replace(/"/g, '&quot;');
+      return `<td><input type="text" value="${val}" data-row="${ri}" data-col="${ci}" /></td>`;
+    }).join('');
+    tr.innerHTML = `<td class="row-num">${ri + 1}</td>${cells}<td style="text-align:center;vertical-align:middle;padding:4px;"><button onclick="deleteRow(${ri})" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:13px;">✕</button></td>`;
     tableBody.appendChild(tr);
   });
-
   tableBody.querySelectorAll('input').forEach(input => {
     input.addEventListener('change', e => {
-      const r = parseInt(e.target.dataset.row);
-      const c = parseInt(e.target.dataset.col);
-      tableData.rows[r][c] = e.target.value;
+      tableData.rows[parseInt(e.target.dataset.row)][parseInt(e.target.dataset.col)] = e.target.value;
     });
   });
 }
 
-function addRow() {
-  const emptyRow = new Array(tableData.headers.length).fill('');
-  tableData.rows.push(emptyRow);
+function deleteRow(ri) {
+  tableData.rows.splice(ri, 1);
   renderRows();
-  const lastRow = tableBody.lastElementChild;
-  if (lastRow) lastRow.querySelector('input').focus();
-  statsGrid.querySelector('.stat-val:nth-child(1)');
-  statsGrid.querySelectorAll('.stat-val')[1].textContent = tableData.rows.length;
+  const rc = document.getElementById('rowCount');
+  if (rc) rc.textContent = tableData.rows.length;
+}
+
+function addRow() {
+  tableData.rows.push(new Array(tableData.headers.length).fill(''));
+  renderRows();
+  const rc = document.getElementById('rowCount');
+  if (rc) rc.textContent = tableData.rows.length;
+  tableBody.lastElementChild?.querySelector('input')?.focus();
 }
 
 addRowBtn.addEventListener('click', addRow);
@@ -352,11 +415,10 @@ dlBtn.addEventListener('click', () => {
   const { headers, rows } = tableData;
   const wsData = [headers, ...rows];
   const ws = XLSX.utils.aoa_to_sheet(wsData);
-  const colWidths = headers.map((_, ci) => {
+  ws['!cols'] = headers.map((_, ci) => {
     const maxLen = Math.max(headers[ci].length, ...rows.map(r => (r[ci] || '').length));
     return { wch: Math.min(Math.max(maxLen + 2, 8), 40) };
   });
-  ws['!cols'] = colWidths;
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'OCR 결과');
   XLSX.writeFile(wb, `OCR_결과_${new Date().toISOString().slice(0, 10)}.xlsx`);
