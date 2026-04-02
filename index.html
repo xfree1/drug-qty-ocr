@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>약품 QTY 집계기</title>
+  <title>표 OCR 변환기</title>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
@@ -16,380 +16,86 @@
       --text: #1a1917;
       --text2: #6b6960;
       --text3: #9e9d96;
-      --accent: #1a1917;
       --accent-bg: #1a1917;
       --accent-text: #f5f4f0;
-      --green: #2d6a4f;
-      --green-bg: #d8f3dc;
       --red: #9b2226;
       --red-bg: #fde8e8;
+      --green: #2d6a4f;
+      --green-bg: #d8f3dc;
       --radius: 6px;
       --radius-lg: 10px;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: 'IBM Plex Sans KR', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    header {
-      background: var(--accent-bg);
-      color: var(--accent-text);
-      padding: 1.25rem 2rem;
-      display: flex;
-      align-items: baseline;
-      gap: 1rem;
-    }
-
-    header h1 {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 15px;
-      font-weight: 500;
-      letter-spacing: 0.02em;
-    }
-
-    header span {
-      font-size: 12px;
-      opacity: 0.45;
-      font-family: 'IBM Plex Mono', monospace;
-    }
-
-    main {
-      max-width: 780px;
-      margin: 0 auto;
-      padding: 2rem 1.5rem 4rem;
-    }
-
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 1.5rem;
-      margin-bottom: 1rem;
-    }
-
-    .card-title {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.08em;
-      color: var(--text3);
-      text-transform: uppercase;
-      margin-bottom: 1rem;
-    }
-
-    .field-label {
-      font-size: 12px;
-      color: var(--text2);
-      margin-bottom: 5px;
-      display: block;
-    }
-
-    .input-row {
-      display: flex;
-      gap: 8px;
-    }
-
-    input[type="password"],
-    input[type="text"] {
-      flex: 1;
-      padding: 9px 12px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 13px;
-      background: var(--surface2);
-      color: var(--text);
-      outline: none;
-      transition: border-color 0.15s;
-    }
-
+    body { font-family: 'IBM Plex Sans KR', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; line-height: 1.6; }
+    header { background: var(--accent-bg); color: var(--accent-text); padding: 1.25rem 2rem; display: flex; align-items: baseline; gap: 1rem; }
+    header h1 { font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 500; letter-spacing: 0.02em; }
+    header span { font-size: 12px; opacity: 0.45; font-family: 'IBM Plex Mono', monospace; }
+    main { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 1rem; }
+    .card-title { font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 500; letter-spacing: 0.08em; color: var(--text3); text-transform: uppercase; margin-bottom: 1rem; }
+    .field-label { font-size: 12px; color: var(--text2); margin-bottom: 5px; display: block; }
+    .input-row { display: flex; gap: 8px; }
+    input[type="password"], input[type="text"] { flex: 1; padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius); font-family: 'IBM Plex Mono', monospace; font-size: 13px; background: var(--surface2); color: var(--text); outline: none; transition: border-color 0.15s; }
     input:focus { border-color: var(--border2); }
-
-    .toggle-btn {
-      padding: 9px 14px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      background: var(--surface2);
-      color: var(--text2);
-      cursor: pointer;
-      font-size: 12px;
-      font-family: 'IBM Plex Mono', monospace;
-      white-space: nowrap;
-    }
-
+    .toggle-btn { padding: 9px 14px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface2); color: var(--text2); cursor: pointer; font-size: 12px; font-family: 'IBM Plex Mono', monospace; white-space: nowrap; }
     .toggle-btn:hover { background: var(--border); }
-
-    .hint {
-      font-size: 11px;
-      color: var(--text3);
-      margin-top: 6px;
-      font-family: 'IBM Plex Mono', monospace;
-    }
-
+    .hint { font-size: 11px; color: var(--text3); margin-top: 6px; font-family: 'IBM Plex Mono', monospace; }
     .hint a { color: var(--text2); }
-
-    .drop-zone {
-      border: 1.5px dashed var(--border2);
-      border-radius: var(--radius-lg);
-      padding: 2.5rem 1rem;
-      text-align: center;
-      cursor: pointer;
-      background: var(--surface2);
-      transition: all 0.15s;
-      position: relative;
-    }
-
-    .drop-zone.drag {
-      border-color: var(--accent);
-      background: #f0efe9;
-    }
-
-    .drop-zone input[type="file"] {
-      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
-    }
-
-    .drop-icon {
-      font-size: 28px;
-      margin-bottom: 8px;
-      opacity: 0.4;
-    }
-
-    .drop-zone strong {
-      display: block;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text);
-      margin-bottom: 4px;
-    }
-
-    .drop-zone p {
-      font-size: 12px;
-      color: var(--text3);
-      font-family: 'IBM Plex Mono', monospace;
-    }
-
-    .file-chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 10px;
-    }
-
-    .chip {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 100px;
-      font-size: 11px;
-      font-family: 'IBM Plex Mono', monospace;
-      color: var(--text2);
-    }
-
-    .chip button {
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: var(--text3);
-      font-size: 14px;
-      line-height: 1;
-      padding: 0;
-      display: flex;
-      align-items: center;
-    }
-
+    .drop-zone { border: 1.5px dashed var(--border2); border-radius: var(--radius-lg); padding: 2.5rem 1rem; text-align: center; cursor: pointer; background: var(--surface2); transition: all 0.15s; position: relative; }
+    .drop-zone.drag { border-color: var(--accent-bg); background: #ebebeb; }
+    .drop-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .drop-zone strong { display: block; font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+    .drop-zone p { font-size: 12px; color: var(--text3); font-family: 'IBM Plex Mono', monospace; }
+    .file-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .chip { display: flex; align-items: center; gap: 6px; padding: 4px 10px; background: var(--surface2); border: 1px solid var(--border); border-radius: 100px; font-size: 11px; font-family: 'IBM Plex Mono', monospace; color: var(--text2); }
+    .chip button { background: none; border: none; cursor: pointer; color: var(--text3); font-size: 14px; line-height: 1; padding: 0; }
     .chip button:hover { color: var(--text); }
-
-    .run-btn {
-      width: 100%;
-      padding: 12px;
-      background: var(--accent-bg);
-      color: var(--accent-text);
-      border: none;
-      border-radius: var(--radius);
-      font-family: 'IBM Plex Sans KR', sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: opacity 0.15s;
-      letter-spacing: 0.01em;
-    }
-
+    .run-btn { width: 100%; padding: 12px; background: var(--accent-bg); color: var(--accent-text); border: none; border-radius: var(--radius); font-family: 'IBM Plex Sans KR', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: opacity 0.15s; }
     .run-btn:hover:not(:disabled) { opacity: 0.85; }
     .run-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-
-    .progress-wrap {
-      margin-top: 10px;
-    }
-
-    .progress-bar-track {
-      height: 3px;
-      background: var(--border);
-      border-radius: 2px;
-      overflow: hidden;
-      margin-bottom: 6px;
-      display: none;
-    }
-
-    .progress-bar-fill {
-      height: 100%;
-      background: var(--accent-bg);
-      border-radius: 2px;
-      transition: width 0.3s ease;
-      width: 0%;
-    }
-
-    .progress-text {
-      font-size: 12px;
-      color: var(--text2);
-      font-family: 'IBM Plex Mono', monospace;
-      min-height: 18px;
-    }
-
-    .error-box {
-      margin-top: 8px;
-      padding: 10px 14px;
-      background: var(--red-bg);
-      color: var(--red);
-      border-radius: var(--radius);
-      font-size: 12px;
-      font-family: 'IBM Plex Mono', monospace;
-      display: none;
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-bottom: 1rem;
-    }
-
-    .stat-box {
-      background: var(--surface2);
-      border-radius: var(--radius);
-      padding: 14px;
-    }
-
-    .stat-label {
-      font-size: 11px;
-      color: var(--text3);
-      font-family: 'IBM Plex Mono', monospace;
-      margin-bottom: 4px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .stat-val {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 22px;
-      font-weight: 500;
-      color: var(--text);
-    }
-
-    .result-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .result-title {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text);
-    }
-
-    .dl-btn {
-      padding: 7px 16px;
-      border: 1px solid var(--border2);
-      border-radius: var(--radius);
-      background: var(--surface);
-      color: var(--text);
-      font-family: 'IBM Plex Sans KR', sans-serif;
-      font-size: 12px;
-      cursor: pointer;
-      transition: background 0.1s;
-    }
-
+    .progress-bar-track { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; margin-bottom: 6px; display: none; }
+    .progress-bar-fill { height: 100%; background: var(--accent-bg); border-radius: 2px; transition: width 0.3s ease; width: 0%; }
+    .progress-text { font-size: 12px; color: var(--text2); font-family: 'IBM Plex Mono', monospace; min-height: 18px; margin-top: 8px; }
+    .error-box { margin-top: 8px; padding: 10px 14px; background: var(--red-bg); color: var(--red); border-radius: var(--radius); font-size: 12px; font-family: 'IBM Plex Mono', monospace; display: none; }
+    .result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+    .result-title { font-size: 13px; font-weight: 500; color: var(--text); }
+    .result-desc { font-size: 11px; color: var(--text3); font-family: 'IBM Plex Mono', monospace; margin-top: 2px; }
+    .btn-row { display: flex; gap: 8px; }
+    .dl-btn { padding: 7px 16px; border: 1px solid var(--border2); border-radius: var(--radius); background: var(--surface); color: var(--text); font-family: 'IBM Plex Sans KR', sans-serif; font-size: 12px; cursor: pointer; transition: background 0.1s; }
     .dl-btn:hover { background: var(--surface2); }
-
-    .result-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    .result-table th {
-      text-align: left;
-      padding: 8px 12px;
-      border-bottom: 1px solid var(--border);
-      font-size: 11px;
-      font-family: 'IBM Plex Mono', monospace;
-      font-weight: 500;
-      color: var(--text3);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .result-table td {
-      padding: 9px 12px;
-      border-bottom: 1px solid var(--border);
-      font-size: 13px;
-      color: var(--text);
-    }
-
-    .result-table tr:last-child td { border-bottom: none; }
-
-    .result-table td:first-child {
-      font-family: 'IBM Plex Mono', monospace;
-      color: var(--text3);
-      font-size: 11px;
-      width: 36px;
-    }
-
-    .result-table td:last-child,
-    .result-table th:last-child {
-      text-align: right;
-      font-family: 'IBM Plex Mono', monospace;
-    }
-
-    .result-table tr.total-row td {
-      font-weight: 500;
-      border-top: 1px solid var(--border2);
-      border-bottom: none;
-      background: var(--surface2);
-    }
-
-    .result-table tr:not(.total-row):hover td {
-      background: var(--surface2);
-    }
-
+    .dl-btn.primary { background: var(--accent-bg); color: var(--accent-text); border-color: var(--accent-bg); }
+    .dl-btn.primary:hover { opacity: 0.85; }
+    .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); }
+    table.edit-table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 800px; }
+    table.edit-table th { background: var(--surface2); padding: 8px 10px; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); font-size: 11px; font-family: 'IBM Plex Mono', monospace; font-weight: 500; color: var(--text2); text-align: left; white-space: nowrap; position: sticky; top: 0; z-index: 1; }
+    table.edit-table th:last-child { border-right: none; }
+    table.edit-table td { padding: 0; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); }
+    table.edit-table td:last-child { border-right: none; }
+    table.edit-table tr:last-child td { border-bottom: none; }
+    table.edit-table td input { width: 100%; padding: 7px 10px; border: none; background: transparent; font-family: 'IBM Plex Sans KR', sans-serif; font-size: 12px; color: var(--text); outline: none; min-width: 80px; }
+    table.edit-table td input:focus { background: #fffbe6; }
+    table.edit-table tr:hover td { background: var(--surface2); }
+    table.edit-table tr:hover td input { background: transparent; }
+    table.edit-table td input:focus { background: #fffbe6 !important; }
+    .row-num { width: 32px; text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text3); padding: 7px 4px; border-right: 1px solid var(--border); background: var(--surface2); }
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 1rem; }
+    .stat-box { background: var(--surface2); border-radius: var(--radius); padding: 14px; }
+    .stat-label { font-size: 11px; color: var(--text3); font-family: 'IBM Plex Mono', monospace; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .stat-val { font-family: 'IBM Plex Mono', monospace; font-size: 22px; font-weight: 500; color: var(--text); }
     #resultSection { display: none; }
-
-    @media (max-width: 500px) {
-      main { padding: 1rem 1rem 3rem; }
-      header { padding: 1rem; }
-      .stats-grid { grid-template-columns: 1fr 1fr; }
-    }
+    .add-row-btn { width: 100%; padding: 8px; border: none; background: var(--surface2); color: var(--text3); font-size: 12px; cursor: pointer; border-top: 1px solid var(--border); font-family: 'IBM Plex Sans KR', sans-serif; border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+    .add-row-btn:hover { background: var(--border); color: var(--text); }
+    @media (max-width: 600px) { main { padding: 1rem 1rem 3rem; } header { padding: 1rem; } .stats-grid { grid-template-columns: 1fr 1fr; } }
   </style>
 </head>
 <body>
 
 <header>
-  <h1>약품 QTY 집계기</h1>
-  <span>Google Vision OCR → Excel</span>
+  <h1>표 OCR 변환기</h1>
+  <span>이미지 → 검수 → Excel</span>
 </header>
 
 <main>
-
   <div class="card">
     <div class="card-title">Google Vision API 키</div>
     <label class="field-label">본인의 Google Cloud Vision API 키를 입력하세요</label>
@@ -404,7 +110,7 @@
     <div class="card-title">이미지 업로드</div>
     <div class="drop-zone" id="dropZone">
       <input type="file" id="fileInput" multiple accept="image/*" />
-      <div class="drop-icon">⊞</div>
+      <div style="font-size:28px;opacity:0.3;margin-bottom:8px;">⊞</div>
       <strong>클릭하거나 드래그하여 이미지 추가</strong>
       <p>JPG · PNG · WEBP · 여러 장 동시 가능</p>
     </div>
@@ -412,229 +118,249 @@
   </div>
 
   <div class="card">
-    <button class="run-btn" id="runBtn" disabled>OCR 실행 후 엑셀 추출</button>
-    <div class="progress-wrap">
-      <div class="progress-bar-track" id="progressTrack">
-        <div class="progress-bar-fill" id="progressFill"></div>
-      </div>
-      <div class="progress-text" id="progressText"></div>
+    <button class="run-btn" id="runBtn" disabled>OCR 실행</button>
+    <div class="progress-bar-track" id="progressTrack">
+      <div class="progress-bar-fill" id="progressFill"></div>
     </div>
+    <div class="progress-text" id="progressText"></div>
     <div class="error-box" id="errorBox"></div>
   </div>
 
   <div id="resultSection">
     <div class="stats-grid" id="statsGrid"></div>
-    <div class="card" style="padding: 0; overflow: hidden;">
-      <div class="result-header" style="padding: 1rem 1.5rem 0;">
-        <span class="result-title">약품명별 QTY 합계</span>
-        <button class="dl-btn" id="dlBtn">엑셀 다운로드 ↓</button>
-      </div>
-      <div style="padding: 0 0 0.5rem;">
-        <table class="result-table">
-          <thead>
-            <tr><th>#</th><th>약품명</th><th>QTY 합계</th></tr>
-          </thead>
-          <tbody id="resultBody"></tbody>
-        </table>
+    <div class="card" style="padding: 1.25rem 1.5rem 0;">
+      <div class="result-header">
+        <div>
+          <div class="result-title">OCR 결과 — 검수 후 다운로드</div>
+          <div class="result-desc">셀을 클릭하면 직접 수정할 수 있습니다</div>
+        </div>
+        <div class="btn-row">
+          <button class="dl-btn" id="addRowBtn">행 추가</button>
+          <button class="dl-btn primary" id="dlBtn">엑셀 다운로드 ↓</button>
+        </div>
       </div>
     </div>
+    <div class="table-wrap" id="tableWrap">
+      <table class="edit-table" id="editTable">
+        <thead id="tableHead"></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+      <button class="add-row-btn" id="addRowBtn2">+ 행 추가</button>
+    </div>
   </div>
-
 </main>
 
 <script>
-  const apiKeyInput = document.getElementById('apiKey');
-  const toggleKey = document.getElementById('toggleKey');
-  const dropZone = document.getElementById('dropZone');
-  const fileInput = document.getElementById('fileInput');
-  const fileChips = document.getElementById('fileChips');
-  const runBtn = document.getElementById('runBtn');
-  const progressTrack = document.getElementById('progressTrack');
-  const progressFill = document.getElementById('progressFill');
-  const progressText = document.getElementById('progressText');
-  const errorBox = document.getElementById('errorBox');
-  const resultSection = document.getElementById('resultSection');
-  const statsGrid = document.getElementById('statsGrid');
-  const resultBody = document.getElementById('resultBody');
-  const dlBtn = document.getElementById('dlBtn');
+const apiKeyInput = document.getElementById('apiKey');
+const toggleKey = document.getElementById('toggleKey');
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const fileChips = document.getElementById('fileChips');
+const runBtn = document.getElementById('runBtn');
+const progressTrack = document.getElementById('progressTrack');
+const progressFill = document.getElementById('progressFill');
+const progressText = document.getElementById('progressText');
+const errorBox = document.getElementById('errorBox');
+const resultSection = document.getElementById('resultSection');
+const statsGrid = document.getElementById('statsGrid');
+const tableHead = document.getElementById('tableHead');
+const tableBody = document.getElementById('tableBody');
+const dlBtn = document.getElementById('dlBtn');
+const addRowBtn = document.getElementById('addRowBtn');
+const addRowBtn2 = document.getElementById('addRowBtn2');
 
-  let files = [];
-  let aggregated = {};
+let files = [];
+let tableData = { headers: [], rows: [] };
 
-  toggleKey.addEventListener('click', () => {
-    const isPass = apiKeyInput.type === 'password';
-    apiKeyInput.type = isPass ? 'text' : 'password';
-    toggleKey.textContent = isPass ? '숨기기' : '보기';
+toggleKey.addEventListener('click', () => {
+  const isPass = apiKeyInput.type === 'password';
+  apiKeyInput.type = isPass ? 'text' : 'password';
+  toggleKey.textContent = isPass ? '숨기기' : '보기';
+});
+
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag'));
+dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('drag'); addFiles([...e.dataTransfer.files]); });
+fileInput.addEventListener('change', () => { addFiles([...fileInput.files]); fileInput.value = ''; });
+
+function addFiles(newFiles) {
+  newFiles.filter(f => f.type.startsWith('image/')).forEach(f => {
+    if (!files.find(x => x.name === f.name && x.size === f.size)) files.push(f);
+  });
+  renderChips();
+}
+
+function renderChips() {
+  fileChips.innerHTML = '';
+  files.forEach((f, i) => {
+    const chip = document.createElement('div');
+    chip.className = 'chip';
+    chip.innerHTML = `<span>${f.name}</span><button onclick="removeFile(${i})">×</button>`;
+    fileChips.appendChild(chip);
+  });
+  runBtn.disabled = files.length === 0;
+}
+
+function removeFile(i) { files.splice(i, 1); renderChips(); }
+
+function toBase64(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result.split(',')[1]);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+
+async function ocrImage(base64, apiKey) {
+  const res = await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${apiKey}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      requests: [{
+        image: { content: base64 },
+        features: [{ type: 'DOCUMENT_TEXT_DETECTION' }]
+      }]
+    })
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message);
+  return data.responses[0];
+}
+
+function parseTableFromOCR(response) {
+  const text = response.fullTextAnnotation?.text || '';
+  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+  if (lines.length === 0) return { headers: [], rows: [] };
+
+  const allRows = lines.map(line => {
+    return line.split(/\t/).map(c => c.trim());
   });
 
-  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag'); });
-  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag'));
-  dropZone.addEventListener('drop', e => {
-    e.preventDefault();
-    dropZone.classList.remove('drag');
-    addFiles([...e.dataTransfer.files]);
+  const maxCols = Math.max(...allRows.map(r => r.length));
+
+  const normalized = allRows.map(row => {
+    while (row.length < maxCols) row.push('');
+    return row;
   });
-  fileInput.addEventListener('change', () => { addFiles([...fileInput.files]); fileInput.value = ''; });
 
-  function addFiles(newFiles) {
-    newFiles.filter(f => f.type.startsWith('image/')).forEach(f => {
-      if (!files.find(x => x.name === f.name && x.size === f.size)) files.push(f);
-    });
-    renderChips();
-  }
+  if (normalized.length === 0) return { headers: [], rows: [] };
 
-  function renderChips() {
-    fileChips.innerHTML = '';
-    files.forEach((f, i) => {
-      const chip = document.createElement('div');
-      chip.className = 'chip';
-      chip.innerHTML = `<span>${f.name}</span><button onclick="removeFile(${i})">×</button>`;
-      fileChips.appendChild(chip);
-    });
-    runBtn.disabled = files.length === 0;
-  }
+  const headers = normalized[0].map((_, i) => `열${i + 1}`);
+  return { headers, rows: normalized };
+}
 
-  function removeFile(i) { files.splice(i, 1); renderChips(); }
+function showError(msg) { errorBox.textContent = msg; errorBox.style.display = 'block'; }
+function hideError() { errorBox.style.display = 'none'; }
 
-  function toBase64(file) {
-    return new Promise((res, rej) => {
-      const r = new FileReader();
-      r.onload = () => res(r.result.split(',')[1]);
-      r.onerror = rej;
-      r.readAsDataURL(file);
-    });
-  }
+runBtn.addEventListener('click', async () => {
+  const apiKey = apiKeyInput.value.trim();
+  if (!apiKey) { showError('Google Vision API 키를 입력하세요.'); return; }
+  if (files.length === 0) return;
 
-  async function ocrImage(base64, apiKey) {
-    const res = await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${apiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        requests: [{
-          image: { content: base64 },
-          features: [{ type: 'DOCUMENT_TEXT_DETECTION' }]
-        }]
-      })
-    });
-    const data = await res.json();
-    if (data.error) throw new Error(data.error.message);
-    return data.responses[0].fullTextAnnotation?.text || '';
-  }
+  runBtn.disabled = true;
+  hideError();
+  resultSection.style.display = 'none';
+  tableData = { headers: [], rows: [] };
+  progressTrack.style.display = 'block';
+  progressFill.style.width = '0%';
 
-  function parseQtyData(text) {
-    const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-    const result = {};
+  for (let i = 0; i < files.length; i++) {
+    const f = files[i];
+    progressText.textContent = `처리 중 (${i + 1}/${files.length}) — ${f.name}`;
+    progressFill.style.width = Math.round(((i) / files.length) * 100) + '%';
 
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      const parts = line.split(/\s+/);
-      const numParts = parts.filter(p => /^[\d,]+$/.test(p.replace(/,/g, '')));
-      if (numParts.length < 2) continue;
+    try {
+      const b64 = await toBase64(f);
+      const response = await ocrImage(b64, apiKey);
+      const parsed = parseTableFromOCR(response);
 
-      const qty = parseInt(numParts[numParts.length - 2].replace(/,/g, ''), 10);
-      if (isNaN(qty) || qty <= 0 || qty > 100000) continue;
-
-      const textParts = parts.filter(p =>
-        !/^[\d,]+$/.test(p.replace(/,/g, '')) &&
-        p !== '원내' && p !== '원외' &&
-        p.length > 1
-      );
-      if (textParts.length === 0) continue;
-
-      const drugName = textParts.join(' ');
-      if (/제약회사|약품명|처방코드|합계|total|제약|회사명/i.test(drugName)) continue;
-      if (!/[가-힣]/.test(drugName)) continue;
-
-      result[drugName] = (result[drugName] || 0) + qty;
-    }
-    return result;
-  }
-
-  function showError(msg) {
-    errorBox.textContent = msg;
-    errorBox.style.display = 'block';
-  }
-
-  function hideError() { errorBox.style.display = 'none'; }
-
-  function setProgress(current, total) {
-    const pct = Math.round((current / total) * 100);
-    progressFill.style.width = pct + '%';
-  }
-
-  runBtn.addEventListener('click', async () => {
-    const apiKey = apiKeyInput.value.trim();
-    if (!apiKey) { showError('Google Vision API 키를 입력하세요.'); return; }
-    if (files.length === 0) return;
-
-    runBtn.disabled = true;
-    hideError();
-    resultSection.style.display = 'none';
-    aggregated = {};
-    progressTrack.style.display = 'block';
-    progressFill.style.width = '0%';
-
-    for (let i = 0; i < files.length; i++) {
-      const f = files[i];
-      progressText.textContent = `처리 중 (${i + 1}/${files.length}) — ${f.name}`;
-      setProgress(i, files.length);
-
-      try {
-        const b64 = await toBase64(f);
-        const text = await ocrImage(b64, apiKey);
-        const parsed = parseQtyData(text);
-        Object.entries(parsed).forEach(([name, qty]) => {
-          aggregated[name] = (aggregated[name] || 0) + qty;
-        });
-      } catch (e) {
-        showError(`오류 (${f.name}): ${e.message}`);
-        runBtn.disabled = false;
-        progressTrack.style.display = 'none';
-        progressText.textContent = '';
-        return;
+      if (tableData.headers.length === 0 && parsed.headers.length > 0) {
+        tableData.headers = parsed.headers;
       }
+      parsed.rows.forEach(row => tableData.rows.push(row));
+    } catch (e) {
+      showError(`오류 (${f.name}): ${e.message}`);
+      runBtn.disabled = false;
+      progressTrack.style.display = 'none';
+      progressText.textContent = '';
+      return;
     }
-
-    setProgress(files.length, files.length);
-    progressText.textContent = `완료 — ${files.length}장 처리됨`;
-    renderResult();
-    runBtn.disabled = false;
-  });
-
-  function renderResult() {
-    const entries = Object.entries(aggregated).sort((a, b) => b[1] - a[1]);
-    const total = entries.reduce((s, [, v]) => s + v, 0);
-
-    statsGrid.innerHTML = `
-      <div class="stat-box"><div class="stat-label">처리 이미지</div><div class="stat-val">${files.length}</div></div>
-      <div class="stat-box"><div class="stat-label">약품 종류</div><div class="stat-val">${entries.length}</div></div>
-      <div class="stat-box"><div class="stat-label">QTY 총합</div><div class="stat-val">${total.toLocaleString()}</div></div>
-    `;
-
-    resultBody.innerHTML =
-      entries.map(([name, qty], i) =>
-        `<tr><td>${i + 1}</td><td>${name}</td><td>${qty.toLocaleString()}</td></tr>`
-      ).join('') +
-      `<tr class="total-row"><td></td><td>합계</td><td>${total.toLocaleString()}</td></tr>`;
-
-    resultSection.style.display = 'block';
-    resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  dlBtn.addEventListener('click', () => {
-    const entries = Object.entries(aggregated).sort((a, b) => b[1] - a[1]);
-    const total = entries.reduce((s, [, v]) => s + v, 0);
-    const wsData = [
-      ['약품명', 'QTY 합계'],
-      ...entries,
-      ['합계', total]
-    ];
-    const ws = XLSX.utils.aoa_to_sheet(wsData);
-    ws['!cols'] = [{ wch: 32 }, { wch: 12 }];
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, '약품 QTY 집계');
-    XLSX.writeFile(wb, `약품_QTY_집계_${new Date().toISOString().slice(0, 10)}.xlsx`);
+  progressFill.style.width = '100%';
+  progressText.textContent = `완료 — ${files.length}장, ${tableData.rows.length}행 추출됨`;
+  renderTable();
+  runBtn.disabled = false;
+});
+
+function renderTable() {
+  const { headers, rows } = tableData;
+
+  statsGrid.innerHTML = `
+    <div class="stat-box"><div class="stat-label">처리 이미지</div><div class="stat-val">${files.length}</div></div>
+    <div class="stat-box"><div class="stat-label">추출 행 수</div><div class="stat-val">${rows.length}</div></div>
+    <div class="stat-box"><div class="stat-label">열 수</div><div class="stat-val">${headers.length}</div></div>
+  `;
+
+  tableHead.innerHTML = `<tr>
+    <th style="width:32px;">#</th>
+    ${headers.map(h => `<th>${h}</th>`).join('')}
+  </tr>`;
+
+  renderRows();
+  resultSection.style.display = 'block';
+  resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderRows() {
+  const { headers, rows } = tableData;
+  tableBody.innerHTML = '';
+  rows.forEach((row, ri) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td class="row-num">${ri + 1}</td>` +
+      headers.map((_, ci) => {
+        const val = (row[ci] || '').replace(/"/g, '&quot;');
+        return `<td><input type="text" value="${val}" data-row="${ri}" data-col="${ci}" /></td>`;
+      }).join('');
+    tableBody.appendChild(tr);
   });
+
+  tableBody.querySelectorAll('input').forEach(input => {
+    input.addEventListener('change', e => {
+      const r = parseInt(e.target.dataset.row);
+      const c = parseInt(e.target.dataset.col);
+      tableData.rows[r][c] = e.target.value;
+    });
+  });
+}
+
+function addRow() {
+  const emptyRow = new Array(tableData.headers.length).fill('');
+  tableData.rows.push(emptyRow);
+  renderRows();
+  const lastRow = tableBody.lastElementChild;
+  if (lastRow) lastRow.querySelector('input').focus();
+  statsGrid.querySelector('.stat-val:nth-child(1)');
+  statsGrid.querySelectorAll('.stat-val')[1].textContent = tableData.rows.length;
+}
+
+addRowBtn.addEventListener('click', addRow);
+addRowBtn2.addEventListener('click', addRow);
+
+dlBtn.addEventListener('click', () => {
+  const { headers, rows } = tableData;
+  const wsData = [headers, ...rows];
+  const ws = XLSX.utils.aoa_to_sheet(wsData);
+  const colWidths = headers.map((_, ci) => {
+    const maxLen = Math.max(headers[ci].length, ...rows.map(r => (r[ci] || '').length));
+    return { wch: Math.min(Math.max(maxLen + 2, 8), 40) };
+  });
+  ws['!cols'] = colWidths;
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'OCR 결과');
+  XLSX.writeFile(wb, `OCR_결과_${new Date().toISOString().slice(0, 10)}.xlsx`);
+});
 </script>
 </body>
 </html>
